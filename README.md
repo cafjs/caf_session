@@ -6,6 +6,9 @@ See http://www.cafjs.com
 
 ## CAF Lib Session
 
+[![Build Status](http://ci.cafjs.com/github.com/cafjs/caf_session/status.svg?branch=master)](http://ci.cafjs.com/github.com/cafjs/caf_session)
+
+
 This repository contains a CAF lib to handle notifications using persistent, logical sessions.
 
 
