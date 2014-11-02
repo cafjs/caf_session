@@ -1,0 +1,41 @@
+{
+    "name": "topSession",
+    "module" : "caf_components#supervisor",
+    "description" : "supervisor for session",
+    "env" : {
+        "dieDelay" : -1,
+        "interval" : 1000,
+        "maxHangRetries": 10,
+        "maxRetries" : 5,
+        "retryDelay" : 100
+    },
+    "components": [
+        {
+            "name": "log",
+            "module" : "caf_components#plug_log",
+            "description" : "Logger",
+            "env" : {
+                "logLevel" : "TRACE"
+            }
+        },
+        {
+            "name": "session",
+            "module" : "../../index.js#plug_ca",
+            "description" : "session Plug CA",
+            "env" : {
+                "maxRetries" : "$._.env.maxRetries",
+                "retryDelay" : "$._.env.retryDelay",
+                "backChannelTimeout" : 1000
+            },
+            "components": [
+                {
+                    "name": "proxy",
+                    "module" : "../../index.js#proxy",
+                    "description" : "session proxy",
+                    "env" : {
+                    }
+                }
+            ]
+        }
+    ]
+}
