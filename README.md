@@ -22,31 +22,25 @@ None
 
 ### ca.json
 
-
-    "internal" : [
         {
-            "module": "caf_session/plug_ca",
-            "name": "session_ca",
-            "description": "Manages sessions with clients\n Properties:\n <bcTimeout> Max seconds to reset the backchannel.\n",
+            "name": "session",
+            "module" : "caf_session#plug_ca",
+            "description" : "Manages sessions with clients\n Properties:\n <backChannelTimeout> Max seconds to reset the backchannel.\n",
             "env" : {
-                 "bcTimeout" : 8
-             }
-         }
-         ...
-     ]
-
-     "proxies" : [
-         {
-             "module": "caf_session/proxy",
-             "name": "session",
-             "description": "Provides information of the session of this incoming request",
-             "env" : {
-
-            }
-          }
-          ...
-      ]
-  
+                "maxRetries" : "$._.env.maxRetries",
+                "retryDelay" : "$._.env.retryDelay",
+                "backChannelTimeout" : 1000
+            },
+            "components": [
+                {
+                    "name": "proxy",
+                    "module" : "caf_session#proxy",
+                    "description" : "session proxy",
+                    "env" : {
+                    }
+                }
+            ]
+        }
         
             
  
