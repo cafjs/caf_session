@@ -131,8 +131,8 @@ module.exports = {
                          function(cb) {
                              var cb0 = function(err, data) {
                                  test.ifError(err);
-                                 var notif =  getNotifData(data);
-                                 test.deepEqual(notif, ['hello2', 'world2']);
+                                 var code =  json_rpc.getSystemErrorCode(data);
+                                 test.equal(code,json_rpc.backchannelTimeout);
                                  cb(null);
                              };
                              self.$._.$.session.pull(newMsg('foo'), cb0);
@@ -140,8 +140,8 @@ module.exports = {
                          function(cb) {
                              var cb0 = function(err, data) {
                                  test.ifError(err);
-                                 var notif =  getNotifError(data);
-                                 test.deepEqual(notif, 'timeout');
+                                 var code =  json_rpc.getSystemErrorCode(data);
+                                 test.equal(code,json_rpc.backchannelTimeout);
                                  cb(null);
                              };
                              self.$._.$.session.pull(newMsg('foo'), cb0);
