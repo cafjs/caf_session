@@ -1,5 +1,5 @@
 var async = require('async');
-var json_rpc = require('caf_transport');
+var json_rpc = require('caf_transport').json_rpc;
 
 var hello = require('./hello/main.js');
 
