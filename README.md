@@ -32,7 +32,7 @@ None
             "env" : {
                 "maxRetries" : "$._.env.maxRetries",
                 "retryDelay" : "$._.env.retryDelay",
-                "backChannelTimeout" : 1000
+                "backchannelTimeout" : 1000
             },
             "components": [
                 {
