@@ -28,7 +28,7 @@ None
         {
             "name": "session",
             "module" : "caf_session#plug_ca",
-            "description" : "Manages sessions with clients\n Properties:\n <backChannelTimeout> Max seconds to reset the backchannel.\n",
+            "description" : "Manages sessions with clients\n Properties:\n <backchannelTimeout> Max seconds to reset the backchannel.\n",
             "env" : {
                 "maxRetries" : "$._.env.maxRetries",
                 "retryDelay" : "$._.env.retryDelay",
