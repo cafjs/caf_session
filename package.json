@@ -1,15 +1,14 @@
 {
     "name": "caf_session",
     "description": "Cloud Assistants lib for supporting logical/persistent sessions",
-    "version": "0.2.6",
+    "version": "0.2.7",
     "author": "Antonio Lain <antlai@cafjs.com>",
     "dependencies": {
         "caf_components" : "^0.2",
         "caf_transport" : "^0.2"
     },
     "devDependencies": {
-        "nodeunit" : ">=0.9",
-        "async" : ">=0.1.9"
+        "nodeunit" : ">=0.9"
     },
     "main": "index",
     "homepage": "http://www.cafjs.com",
