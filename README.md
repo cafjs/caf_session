@@ -35,7 +35,7 @@ If clients are stateless, or we keep changing devices all the time, can we guara
 
 After all, you didn't want two toasters, did you?
 
-The influential work by Berstein&Hsu&Mann'90 shows how to use a reliable queue to guarantee exactly-once delivery with a stateless client. A CA has an input queue, and its state is managed transactionally (see  {@link external:caf_ca}). Input and output queues are not checkpointed, but losing them is equivalent to dropping  messages in transit, and we do not assume a reliable transport. Can we use a CA to implement exactly-once delivery for a stateless client?
+The influential work by Bernstein&Hsu&Mann'90 shows how to use a reliable queue to guarantee exactly-once delivery with a stateless client. A CA has an input queue, and its state is managed transactionally (see  {@link external:caf_ca}). Input and output queues are not checkpointed, but losing them is equivalent to dropping  messages in transit, and we do not assume a reliable transport. Can we use a CA to implement exactly-once delivery for a stateless client?
 
 Yes, if the client application is written in a certain way:
 
