@@ -15,7 +15,7 @@ This repository contains a CAF lib to handle notifications using persistent sess
 What's wrong with cookies for session management?
 
 * Chosen by the server not the client.
-* Cannot have sensible, human-friendly, identifiers.
+* Cannot have sensible, human-friendly, values.
 * Do not move between devices.
 * Browsers mess with them, making it difficult to replicate behavior outside the browser.
 
