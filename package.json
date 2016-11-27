@@ -1,15 +1,17 @@
 {
     "name": "caf_session",
-    "description": "Cloud Assistants lib for supporting logical/persistent sessions",
-    "version": "0.2.9",
+    "description": "Cloud Assistants lib for supporting persistent sessions",
+    "version": "0.2.10",
     "author": "Antonio Lain <antlai@cafjs.com>",
     "dependencies": {
-        "caf_components" : "^0.2",
-        "caf_transport" : "^0.2"
+        "caf_components" : "^0.2.0",
+        "caf_transport" : "^0.2.0"
     },
     "devDependencies": {
         "eslint": "^3.1.1",
-        "nodeunit" : ">=0.9"
+        "nodeunit" : ">=0.9",
+        "caf_core" : "^0.2.0",
+        "jsdoc": "^3.4.2"
     },
     "main": "index",
     "homepage": "http://www.cafjs.com",
@@ -20,7 +22,8 @@
    "scripts": {
         "test": "node ./node_modules/.bin/nodeunit",
         "eslint" : "./node_modules/.bin/eslint .",
-        "eslintfix" : "./node_modules/.bin/eslint --fix ."
+        "eslintfix" : "./node_modules/.bin/eslint --fix .",
+        "docs" : "rm -fr docs; mkdir -p docs; ./node_modules/.bin/jsdoc --pedantic -c ./conf.json -d docs lib/*.js --readme ./README.md --package ./package.json"
     },
     "engines": { "node": ">= 0.10.1 " }
 }
