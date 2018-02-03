@@ -3,13 +3,13 @@
 var caf = require('caf_core');
 
 exports.methods = {
-    __ca_init__: function(cb) {
+    async __ca_init__() {
         this.state.counter = 0;
         this.$.session.limitQueue(10, 'client1');
         this.$.session.limitQueue(10, 'client2');
-        cb(null);
+        return [];
     },
-    __ca_pulse__: function(cb) {
+    async __ca_pulse__() {
         this.state.counter = this.state.counter + 1;
         if (this.state.counter % 2 === 0) {
             this.$.session.notify([this.state.counter], 'client1');
@@ -17,22 +17,22 @@ exports.methods = {
         if (this.state.counter % 3 === 0) {
             this.$.session.notify([this.state.counter], 'client2');
         }
-        cb(null);
+        return [];
     },
-    sessionInfo: function(cb) {
+    async sessionInfo() {
         var self = this;
         var sessionInfo = {current: this.$.session.getSessionId()};
         this.$.session.getAllSessionIds().forEach(function(x) {
             sessionInfo[x] = self.$.session.outq(x);
         });
-        cb(null, sessionInfo);
+        return [null, sessionInfo];
     },
-    notifyAll: function(msg, cb) {
+    async notifyAll(msg) {
         var self = this;
         this.$.session.getAllSessionIds().forEach(function(x) {
             self.$.session.notify([msg], x);
         });
-        this.sessionInfo(cb);
+        return this.sessionInfo();
     }
 };
 

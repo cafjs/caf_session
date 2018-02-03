@@ -29,26 +29,6 @@ The best approach is very application dependent. In some cases we just need the 
 
 Our solution exposes the contents of output queues to application code, so that it can make the right choices.
 
-### Persistent Sessions
-
-If clients are stateless, or we keep changing devices all the time, can we guarantee that certain actions are only done once?
-
-After all, you didn't want two toasters, did you?
-
-The influential work by Bernstein&Hsu&Mann'90 shows how to use a reliable queue to guarantee exactly-once delivery with a stateless client. A CA has an input queue, and its state is managed transactionally (see  {@link external:caf_ca}). Input and output queues are not checkpointed, but losing them is equivalent to dropping  messages in transit, and we do not assume a reliable transport. Can we use a CA to implement exactly-once delivery for a stateless client?
-
-Yes, if the client application is written in a certain way:
-
-* First, it needs to explicitly start and end a persistent session. If a session is started again without being properly closed, we assume the client crashed.
-
-* Second, it has to protect against concurrent sessions by using nonces.
-
-* Third, enough client state has to be piggybacked to requests, so that the client can know what was the last committed action before the crash. We use a `memento` for that (see {@link module:caf_session/proxy_session}).
-
-* Fourth, in case of a timeout or error it has to crash and start again the session. When the session restarts it will receive the last `memento`, and use it to avoid duplicated requests.
-
-The key is that our client library (see {@link  external:caf_cli}) and the CA serialize all the requests within one session instance. Across sessions, nonces guarantee that only one session instance is active, and requests in other concurrent sessions will fail.
-
 ### Hello World (see `examples/helloworld`)
 
 The following example shows how to limit queues, and periodically notify
@@ -56,13 +36,13 @@ two clients, each using a different logical session:
 
 ```
 exports.methods = {
-    __ca_init__: function(cb) {
+    async __ca_init__() {
         this.state.counter = 0;
         this.$.session.limitQueue(10, 'client1');
         this.$.session.limitQueue(10, 'client2');
-        cb(null);
+        return [];
     },
-    __ca_pulse__: function(cb) {
+    async __ca_pulse__() {
         this.state.counter = this.state.counter + 1;
         if (this.state.counter % 2 === 0) {
             this.$.session.notify([this.state.counter], 'client1');
@@ -70,7 +50,7 @@ exports.methods = {
         if (this.state.counter % 3 === 0) {
             this.$.session.notify([this.state.counter], 'client2');
         }
-        cb(null);
+        return [];
     }
 }
 ```
@@ -80,13 +60,13 @@ To check the status of all the queues:
 ```
 exports.methods = {
 ...
-    sessionInfo: function(cb) {
+    async sessionInfo() {
         var self = this;
         var sessionInfo = {current: this.$.session.getSessionId()};
         this.$.session.getAllSessionIds().forEach(function(x) {
             sessionInfo[x] = self.$.session.outq(x);
         });
-        cb(null, sessionInfo);
+        return [null, sessionInfo];
     }
 }
 ```
@@ -96,17 +76,40 @@ If we want to notify all logical sessions, without knowing them a priori:
 ```
 exports.methods = {
 ...
-    notifyAll: function(msg, cb) {
+    async notifyAll(msg) {
         var self = this;
         this.$.session.getAllSessionIds().forEach(function(x) {
             self.$.session.notify([msg], x);
         });
-        this.sessionInfo(cb);
+        return this.sessionInfo();
     }
 }
 ```
 
 The client uses the handler `onmessage` to receive notifications. See `client1.js` for an example.
+
+### Persistent Sessions
+
+If clients are stateless, or we keep changing devices all the time, can we guarantee that certain actions are only done once?
+
+After all, you didn't want two toasters, did you?
+
+The influential work by Bernstein&Hsu&Mann'90 shows how to use a reliable queue to guarantee exactly-once delivery with a stateless client. A CA has an input queue, and its state is managed transactionally (see  {@link external:caf_ca}). Input and output queues are not checkpointed, but losing them is equivalent to dropping  messages in transit, and we do not assume a reliable transport.
+
+Can we use a CA to implement exactly-once delivery for a stateless client?
+
+Yes, if the client application is written in a certain way:
+
+* First, it needs to explicitly start and end a persistent session. If a session is started again without being properly closed, we assume the client crashed.
+
+* Second, it has to serialize concurrent sessions by using nonces.
+
+* Third, enough client state has to be piggybacked to requests, so that the client can know what was the last committed action before the crash. We use a `memento` for that (see {@link module:caf_session/proxy_session}).
+
+* Fourth, in case of a timeout or error it has to crash and start again the session. When the session restarts it will receive the last `memento`, and use it to avoid duplicated requests.
+
+The key is that our client library (see {@link  external:caf_cli}) and the CA serialize all the requests within one session instance. Across sessions, nonces guarantee that only one session instance is active, and requests in other concurrent sessions will fail.
+
 
 ### Hello Persistent (see `examples/hellopersistent`)
 
@@ -114,29 +117,29 @@ This example shows how to guarantee that bought items are not duplicated:
 
 ```
 exports.methods = {
-    __ca_init__: function(cb) {
+    async __ca_init__() {
         this.state.counters = {};
-        cb(null);
+        return [];
     },
-    begin: function(cb) {
-        cb(null,  this.$.session.begin());
+    async begin() {
+        return [null, this.$.session.begin()];
     },
-    buy: function(nonce, itemIndex, item, cb) {
+    async buy(nonce, itemIndex, item) {
         if (this.$.session.remember(nonce, itemIndex)) {
             var counter = this.state.counters[item] || 0;
             this.state.counters[item] = counter + 1;
-            this.getCounters(cb);
+            return this.getCounters();
         } else {
             var err = new Error('Ignoring buy operation, bad nonce');
             err.item = item;
-            cb(err);
+            return [err];
         }
     },
-    end: function(nonce, cb) {
-        cb(null, this.$.session.end(nonce));
+    async end(nonce) {
+        return [null, this.$.session.end(nonce)];
     },
-    getCounters: function(cb) {
-        cb(null, this.state.counters);
+    async getCounters() {
+        return [null, this.state.counters];
     }
 }
 ```

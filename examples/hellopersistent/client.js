@@ -3,7 +3,6 @@
 
 var caf_core = require('caf_core');
 var caf_comp = caf_core.caf_components;
-var async = caf_comp.async;
 var myUtils = caf_comp.myUtils;
 var caf_cli = caf_core.caf_cli;
 var crypto = require('crypto');
@@ -30,41 +29,35 @@ var STUFF = [
 
 var s = new caf_cli.Session(URL);
 
-s.onopen = function() {
-    var nonce = null;
-    async.waterfall([
-        s.begin,
-        function(sessionInfo, cb) {
-            console.log(sessionInfo);
-            var index = 0;
-            if (typeof sessionInfo.memento === 'number') {
-                console.log('Crash detected, last buy was ' +
-                            STUFF[sessionInfo.memento]);
-                index = sessionInfo.memento + 1;
-            }
-            nonce = sessionInfo.nonce;
-            var all = STUFF.slice(index);
-            async.forEachOfSeries(all, function(item, localIndex, cb1) {
-                randomCrash();
-                var globalIndex = index + localIndex;
-                s.buy(nonce, globalIndex, item, function(err, info) {
-                    console.log(err ? 'Error with index ' + globalIndex :
-                                JSON.stringify(info));
-                    cb1(err, info);
-                });
-            }, cb);
-        },
-        function(cb) {
-            s.end(nonce, cb);
+s.onopen = async function() {
+    try {
+        var nonce = null;
+        var globalIndex;
+        var sessionInfo = await s.begin().getPromise();
+        console.log(sessionInfo);
+        var index = 0;
+        if (typeof sessionInfo.memento === 'number') {
+            console.log('Crash detected, last buy was ' +
+                        STUFF[sessionInfo.memento]);
+            index = sessionInfo.memento + 1;
         }
-    ], function(err, info) {
-        if (err) {
-            s.close(err);
-        } else {
-            console.log('End info:' + JSON.stringify(info));
-            s.close();
+        nonce = sessionInfo.nonce;
+        var all = STUFF.slice(index);
+        for (let [localIndex, item] of all.entries()) {
+            // console.log('localIndex:' + localIndex);
+            // console.log('item:' + item);
+            randomCrash();
+            globalIndex = index + localIndex;
+            let info = await s.buy(nonce, globalIndex, item).getPromise();
+            console.log(JSON.stringify(info));
         }
-    });
+        var info = await s.end(nonce).getPromise();
+        s.close();
+        console.log('End info:' + JSON.stringify(info));
+    } catch (err) {
+        console.log('Error with index ' + globalIndex);
+        s.close(err);
+    }
 };
 
 s.onclose = function(err) {

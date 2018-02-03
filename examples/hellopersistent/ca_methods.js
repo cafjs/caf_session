@@ -3,29 +3,29 @@
 var caf = require('caf_core');
 
 exports.methods = {
-    __ca_init__: function(cb) {
+    async __ca_init__() {
         this.state.counters = {};
-        cb(null);
+        return [];
     },
-    begin: function(cb) {
-        cb(null, this.$.session.begin());
+    async begin() {
+        return [null, this.$.session.begin()];
     },
-    buy: function(nonce, itemIndex, item, cb) {
+    async buy(nonce, itemIndex, item) {
         if (this.$.session.remember(nonce, itemIndex)) {
             var counter = this.state.counters[item] || 0;
             this.state.counters[item] = counter + 1;
-            this.getCounters(cb);
+            return this.getCounters();
         } else {
             var err = new Error('Ignoring buy operation, bad nonce');
             err.item = item;
-            cb(err);
+            return [err];
         }
     },
-    end: function(nonce, cb) {
-        cb(null, this.$.session.end(nonce));
+    async end(nonce) {
+        return [null, this.$.session.end(nonce)];
     },
-    getCounters: function(cb) {
-        cb(null, this.state.counters);
+    async getCounters() {
+        return [null, this.state.counters];
     }
 };
 
