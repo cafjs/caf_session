@@ -5,7 +5,8 @@ Co-design permanent, active, stateful, reliable cloud proxies with your web app 
 See http://www.cafjs.com
 
 ## CAF Lib Session
-[![Build Status](http://ci.cafjs.com/api/badges/cafjs/caf_session/status.svg)](http://ci.cafjs.com/cafjs/caf_session)
+[![Build Status](https://travis-ci.org/cafjs/caf_session.svg?branch=master)](https://travis-ci.org/cafjs/caf_session)
+
 
 
 This repository contains a CAF lib to handle notifications using persistent sessions.
