@@ -1,6 +1,6 @@
 'use strict';
 
-var caf = require('caf_core');
+const caf = require('caf_core');
 
 exports.methods = {
     async __ca_init__() {
@@ -12,11 +12,11 @@ exports.methods = {
     },
     async buy(nonce, itemIndex, item) {
         if (this.$.session.remember(nonce, itemIndex)) {
-            var counter = this.state.counters[item] || 0;
+            const counter = this.state.counters[item] || 0;
             this.state.counters[item] = counter + 1;
             return this.getCounters();
         } else {
-            var err = new Error('Ignoring buy operation, bad nonce');
+            const err = new Error('Ignoring buy operation, bad nonce');
             err.item = item;
             return [err];
         }

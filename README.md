@@ -1,15 +1,14 @@
-# CAF.js (Cloud Assistant Framework)
+# Caf.js
 
 Co-design permanent, active, stateful, reliable cloud proxies with your web app and gadgets.
 
-See http://www.cafjs.com
+See https://www.cafjs.com
 
-## CAF Lib Session
+## Library for Managing Sessions
+
 [![Build Status](https://travis-ci.org/cafjs/caf_session.svg?branch=master)](https://travis-ci.org/cafjs/caf_session)
 
-
-
-This repository contains a CAF lib to handle notifications using persistent sessions.
+This repository contains a `Caf.js` library to handle notifications using persistent sessions.
 
 ### Better Cookies
 
@@ -62,10 +61,9 @@ To check the status of all the queues:
 exports.methods = {
 ...
     async sessionInfo() {
-        var self = this;
-        var sessionInfo = {current: this.$.session.getSessionId()};
-        this.$.session.getAllSessionIds().forEach(function(x) {
-            sessionInfo[x] = self.$.session.outq(x);
+        const sessionInfo = {current: this.$.session.getSessionId()};
+        this.$.session.getAllSessionIds().forEach((x) => {
+            sessionInfo[x] = this.$.session.outq(x);
         });
         return [null, sessionInfo];
     }
@@ -78,9 +76,8 @@ If we want to notify all logical sessions, without knowing them a priori:
 exports.methods = {
 ...
     async notifyAll(msg) {
-        var self = this;
-        this.$.session.getAllSessionIds().forEach(function(x) {
-            self.$.session.notify([msg], x);
+        this.$.session.getAllSessionIds().forEach((x) => {
+            this.$.session.notify([msg], x);
         });
         return this.sessionInfo();
     }
@@ -107,14 +104,14 @@ Yes, if the client application is written in a certain way:
 
 * Third, enough client state has to be piggybacked to requests, so that the client can know what was the last committed action before the crash. We use a `memento` for that (see {@link module:caf_session/proxy_session}).
 
-* Fourth, in case of a timeout or error it has to crash and start again the session. When the session restarts it will receive the last `memento`, and use it to avoid duplicated requests.
+* Fourth, in case of a timeout or error, it has to crash and restart the session. When the session restarts it will receive the last `memento`, and use it to avoid duplicated requests.
 
-The key is that our client library (see {@link  external:caf_cli}) and the CA serialize all the requests within one session instance. Across sessions, nonces guarantee that only one session instance is active, and requests in other concurrent sessions will fail.
+The key is that our client library (see {@link  external:caf_cli}) and the CA serialize all the requests of a client within one session instance. Across sessions, nonces guarantee that only one session instance is active, and requests in other concurrent sessions will fail.
 
 
 ### Hello Persistent (see `examples/hellopersistent`)
 
-This example shows how to guarantee that bought items are not duplicated:
+This example shows how to guarantee that the items bought are not duplicated:
 
 ```
 exports.methods = {

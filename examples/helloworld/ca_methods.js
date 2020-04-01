@@ -1,6 +1,6 @@
 'use strict';
 
-var caf = require('caf_core');
+const caf = require('caf_core');
 
 exports.methods = {
     async __ca_init__() {
@@ -20,17 +20,15 @@ exports.methods = {
         return [];
     },
     async sessionInfo() {
-        var self = this;
-        var sessionInfo = {current: this.$.session.getSessionId()};
-        this.$.session.getAllSessionIds().forEach(function(x) {
-            sessionInfo[x] = self.$.session.outq(x);
+        const sessionInfo = {current: this.$.session.getSessionId()};
+        this.$.session.getAllSessionIds().forEach((x) => {
+            sessionInfo[x] = this.$.session.outq(x);
         });
         return [null, sessionInfo];
     },
     async notifyAll(msg) {
-        var self = this;
-        this.$.session.getAllSessionIds().forEach(function(x) {
-            self.$.session.notify([msg], x);
+        this.$.session.getAllSessionIds().forEach((x) => {
+            this.$.session.notify([msg], x);
         });
         return this.sessionInfo();
     }
