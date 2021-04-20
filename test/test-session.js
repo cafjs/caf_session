@@ -153,6 +153,75 @@ module.exports = {
                          test.done();
                      });
     },
+    maxSessions: function(test) {
+        const self = this;
+        test.expect(12);
+        const opF1 = function(plugCA, cb) {
+            test.equal(plugCA.$.proxy.getSessionId(), 'foo_1');
+            plugCA.$.proxy.notify(['hello']);
+            cb(null);
+        };
+        const opF2 = function(plugCA, cb) {
+            console.log(JSON.stringify(plugCA.$.proxy.getAllSessionIds()));
+            test.equal(plugCA.$.proxy.getSessionId(), 'foo_2');
+            plugCA.$.proxy.notify(['hello']);
+            cb(null);
+        };
+        const opF3 = function(plugCA, cb) {
+            test.equal(plugCA.$.proxy.getSessionId(), 'foo_3');
+            plugCA.$.proxy.notify(['hello']);
+            cb(null);
+        };
+        // 3 sessions is the max, see hello1.json
+        const opF4 = function(plugCA, cb) {
+            test.equal(plugCA.$.proxy.getSessionId(), 'foo_4');
+            plugCA.$.proxy.notify(['hello']);
+            cb(null);
+        };
+         const opF5 = function(plugCA, cb) {
+            test.equal(plugCA.$.proxy.getSessionId(), 'foo_4');
+            plugCA.$.proxy.notify(['hello1'], /^foo_/);
+            cb(null);
+        };
+        const opF6 = function(plugCA, cb) {
+            test.equal(plugCA.$.proxy.getSessionId(), 'foo_4');
+            plugCA.$.proxy.notify(['hello']);
+            console.log(JSON.stringify(plugCA.$.proxy.getAllSessionIds()));
+            test.ok(plugCA.$.proxy.getAllSessionIds().length === 3);
+            test.ok(plugCA.$.proxy.outq('foo_3').length === 0);
+            test.deepEqual(plugCA.$.proxy.outq('foo_1'), [['hello'],
+                                                          ['hello1']]);
+            test.deepEqual(plugCA.$.proxy.outq('foo_2'), [['hello'],
+                                                          ['hello1']]);
+            test.deepEqual(plugCA.$.proxy.outq('foo_4'), [['hello'],
+                                                          ['hello1']]);
+            cb(null);
+        };
+
+        async.series([
+            function(cb) {
+                processMsg(opF1, null, self.$._.$.session, 'foo_1', cb);
+            },
+            function(cb) {
+                processMsg(opF2, null, self.$._.$.session, 'foo_2', cb);
+            },
+            function(cb) {
+                processMsg(opF3, null, self.$._.$.session, 'foo_3', cb);
+            },
+            function(cb) {
+                processMsg(opF4, null, self.$._.$.session, 'foo_4', cb);
+            },
+            function(cb) {
+                processMsg(opF5, null, self.$._.$.session, 'foo_4', cb);
+            },
+            function(cb) {
+                processMsg(opF6, null, self.$._.$.session, 'foo_4', cb);
+            }
+        ], function(err, data) {
+            test.ifError(err);
+            test.done();
+        });
+    },
     pendingSession: function(test) {
         var self = this;
         test.expect(7);
