@@ -78,7 +78,7 @@ module.exports = {
         var opF1 = function(plugCA, cb) {
             test.equal(plugCA.$.proxy.getSessionId(), 'foo');
             test.deepEqual(plugCA.$.proxy.outq(), []);
-            test.deepEqual(plugCA.$.proxy.getAllSessionIds(), []);
+            test.deepEqual(plugCA.$.proxy.getAllSessionIds(), ['foo']);
             plugCA.$.proxy.notify(['hello', 'world']);
             cb(null);
         };
@@ -86,7 +86,7 @@ module.exports = {
             test.equal(plugCA.$.proxy.getSessionId(), 'bar');
             test.deepEqual(plugCA.$.proxy.outq('foo'), [['hello', 'world']]);
             test.deepEqual(plugCA.$.proxy.outq(), []);
-            test.deepEqual(plugCA.$.proxy.getAllSessionIds(), ['foo']);
+            test.deepEqual(plugCA.$.proxy.getAllSessionIds(), ['foo', 'bar']);
             plugCA.$.proxy.notify(['bye', 'planet']);
             plugCA.$.proxy.notify(['hello2','world2'], 'foo');
             cb(null);

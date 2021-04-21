@@ -7,6 +7,8 @@ The  copyright of the original `CAF` project is assigned to `Hewlett-Packard Dev
 ## 0.4.1
 - Add regexp to notify
 - Set default limits on #messages and #sessions
+- Always register the session to enable regexp notify
+- Pin sessions by setting a msg limit different from the default one.
 
 ## 0.4.0
  - Add new copyright to simplify third-party contributions
