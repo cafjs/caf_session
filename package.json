@@ -1,7 +1,7 @@
 {
     "name": "caf_session",
     "description": "Cloud Assistants lib for supporting persistent sessions",
-    "version": "0.4.1",
+    "version": "0.4.2",
     "author": "Antonio Lain <antlai@cafjs.com>",
     "license": "Apache-2.0",
     "dependencies": {
