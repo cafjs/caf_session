@@ -12,7 +12,7 @@ const crypto = require('crypto');
  *
  *  With security on, we would need a token to authenticate `from`.
  */
-const URL = 'http://root-hellopersist.vcap.me:3000/#from=foo-ca1&ca=foo-ca1';
+const URL = 'http://root-hellopersist.localtest.me:3000/#from=foo-ca1&ca=foo-ca1';
 
 const randomCrash = function() {
     const rand = crypto.randomBytes(1).readInt8();
